@@ -45,7 +45,3 @@ class TestTaxPortalWebsite:
     def test_login(self):
         website = TaxPortalWebsite(login=False)
         website.login()
-
-    def test_start_invoice(self):
-        website = TaxPortalWebsite()
-        website._start_invoice(date=date(2024, 4, 19))

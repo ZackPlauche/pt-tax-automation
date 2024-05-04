@@ -3,15 +3,15 @@ from __future__ import annotations
 import os
 from datetime import datetime, date
 from decimal import Decimal
+from pathlib import Path
 
 import requests
 from currency_converter import CurrencyConverter, ECB_URL
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys as KEYS
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 
 
 # Collect details of the invoice
@@ -24,11 +24,16 @@ class Invoice(BaseModel):
     description: str
 
     @classmethod
-    def from_input(cls):
-        client_name = input('Enter the full name of the client: ')
-        amount = input('Enter the invoice amount in USD: $')
-        date = input('Enter the date (format: YYYY-MM-DD): ')
-        description = input('Enter the description: ')
+    def from_input(cls,
+                   client_name: str | None = None,
+                   amount: Decimal | None = None,
+                   date: date | None = None,
+                   description: str | None = None,
+                   ) -> Invoice:
+        client_name = client_name or input('Enter the full name of the client: ')
+        amount = amount or input('Enter the invoice amount in USD: $')
+        date = date or input('Enter the date (format: YYYY-MM-DD): ')
+        description = input(f'Enter the description (default: {repr(description)}): ') or description
         return cls(amount=amount, date=date, client_name=client_name, description=description)
 
     def to_currency(self, to_currency: str) -> Invoice:
@@ -42,16 +47,17 @@ class Invoice(BaseModel):
 # Convert USD to Euro value of that day
 # 1. Get the latest exchange rates
 def convert_currency(amount: int | float | Decimal, from_currency: str, to_currency: str, date: date) -> Decimal:
-
+    exchange_rates_dir = Path('exchange_rates').resolve()
+    exchange_rates_dir.mkdir(exist_ok=True)
     # 1. Get the latest exchange rates
-    filename = f'ecb_{datetime.today().date():%Y%m%d}.zip'
-    if not os.path.isfile(filename):
+    exchange_rates_file = exchange_rates_dir / f'ecb_{datetime.today().date():%Y%m%d}.zip'
+    if not exchange_rates_file.exists():
         response = requests.get(ECB_URL)
-        with open(filename, 'wb') as f:
+        with exchange_rates_file.open('wb') as f:
             f.write(response.content)
 
     # 2. Convert the amount to EUR
-    amount = CurrencyConverter(filename).convert(amount, from_currency, to_currency, date)
+    amount = CurrencyConverter(str(exchange_rates_file)).convert(amount, from_currency, to_currency, date)
     return amount
 
 
@@ -61,7 +67,8 @@ class TaxPortalWebsite:
         'login': 'https://www.acesso.gov.pt/v2/loginForm?partID=SIRE&path=/recibos/portal/',
         'login success': 'https://irs.portaldasfinancas.gov.pt/recibos/;sireinter_JSessionID=',
         'invoice start': 'https://irs.portaldasfinancas.gov.pt/recibos/portal/emitir/emitirDocumentos',
-        'invoice form': 'https://irs.portaldasfinancas.gov.pt/recibos/portal/emitir/emitirfatura'
+        'invoice form': 'https://irs.portaldasfinancas.gov.pt/recibos/portal/emitir/emitirfatura',
+        'invoice complete': 'https://irs.portaldasfinancas.gov.pt/recibos/portal/consultar/detalhe/',
     }
 
     def __init__(self, login: bool = True, headless: bool = False):
@@ -84,21 +91,27 @@ class TaxPortalWebsite:
         self.browser.find_element('id', 'sbmtLogin').click()
         WebDriverWait(self.browser, 10).until(EC.url_contains(self.PAGES['login success']))
 
-    def submit_invoice(self, invoice: Invoice, submit: bool = True):
+    def submit_invoice(self, invoice: Invoice, confirm: bool = True):
         if not invoice.currency == 'EUR':
             invoice = invoice.to_currency('EUR')
         invoice_form_url = f'{self.PAGES["invoice form"]}?dataCopia={invoice.date:%Y-%m-%d}&tipoRecibo=FR'
         self.browser.get(invoice_form_url)
-        self.browser.find_element('css selector', 'select[name="pais"]').send_keys('EST', KEYS.ENTER)
+        Select(self.browser.find_element('css selector', 'select[name="pais"]')).select_by_visible_text('ESTADOS UNIDOS')
         self.browser.find_element('css selector', 'input[name="nomeAdquirente"]').send_keys(invoice.client_name)
         self.browser.find_element('css selector', 'input[name="titulo"][value="1"]').click()
         self.browser.find_element('css selector', 'textarea[name="servicoPrestado"]').send_keys(invoice.description)
         self.browser.find_element('css selector', 'input[name="valorBase"]').send_keys(f'{invoice.amount:.2f}')
+        Select(self.browser.find_element('css selector', 'select[name="regimeIva"]')).select_by_visible_text('Regras de localização - art.º 6.º [regras especificas]')
+        Select(self.browser.find_element('css selector', 'select[name="regimeIncidenciaIrs"]')).select_by_visible_text('Sem retenção - Não residente sem estabelecimento')
+        if confirm:
+            input('Review the invoice and press Enter to confirm...')
         issue_button = [button for button in self.browser.find_elements('css selector', 'button') if button.text == 'EMITIR'][0]
-        os.system('pause')
-        if submit:
-            issue_button.click()
-        
-
-        
-
+        issue_button.click()
+        if confirm:
+            input('Review one last time and press Enter to confirm...')
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_any_elements_located(('css selector', 'button.btn-success')))
+        final_submit_button = [button for button in self.browser.find_elements('css selector', 'button.btn-success') if button.text == 'EMITIR'][0]
+        final_submit_button.click()
+        WebDriverWait(self.browser, 10).until(EC.url_contains(self.PAGES['invoice complete']))
+        if confirm:
+            input('Invoice submitted successfully. Press Enter to exit...')
