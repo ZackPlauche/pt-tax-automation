@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .blur-md {
+        blur-md: blur(20px);
+        display: inline-block;
+      }
+    </style>
+
+  </head>
+
+  <body class="bg-neutral-950 text-white bg-gradient-to-br from-green-900 to-red-900 bg-fixed min-h-screen">
+    <div class="px-5 py-5">
+      <div class="mx-auto max-w-screen-xl">
+
+
+        <header>
+          <h1 class="text-6xl font-semibold"><span class="blur-md">Dumb Ass</span> Portuguese Tax Portal <span class="blur-md">🥴</span><img class="-ml-6 -mt-1 inline w-32" src="../../static/images/pastel-de-nata.png" /></h1>
+        </header>
+        <!-- Content Start -->
+        <div class="flex">
+          <div class="w-1/2">
+            <button id="blurButton" type="button" class="px-5 py-2 rounded-full bg-white/20 hover:bg-white/30">Filter mode: off</button>
+            <div class="text-xl">
+              <p class="mt-5">Welcome to the <span class="blur-md">Dumb Ass </span>Portuguese Tax Portal!</p>
+              <p class="mt-5">This site is to help you<span class="blur-md">r dumb ass</span> submit your <span class="blur-md">fucking retarded</span> Portuguese Green Receipts in fucking English</p>
+              <p class="mt-5">(because the<span class="blur-md">se lazy</span> government <span class="blur-md">fuckers</span> couldn't include a <span class="blur-md">fucking</span> English version)</p>
+              <p class="mt-5">to keep you<span class="blur-md">r fucking shit</span>organized.</p>
+              <p class="mt-5">Fill out the <span class="blur-md">fucking</span> Invoice form to get <span class="blur-md">fucking </span>started!</p>
+            </div>
+            <script>
+
+            </script>
+          </div>
+
+          <!-- Form Start -->
+          <form action="/start-automation" class="bg-neutral-900 p-5 rounded-lg max-w-xl shadow-xl w-1/2 mt-3" method="post">
+            <h2 class="text-4xl font-bold">Invoice Form</h2>
+            <!-- Field -->
+            <div class="mt-5 space-y-5">
+              <div>
+                <label class="block" for="client_name">What is your client's name?</label>
+                <input class="p-1 mt-1.5 place text-blue-400 rounded bg-transparent shadow-[inset_0_0_0_0.5px] shadow-blue-600 outline-none" type="text" name="client_name" placeholder="Fucker Jones">
+              </div>
+              <div>
+                <label class="block" for="client_name">What is their situation?</label>
+                <div class="flex items-center gap-2">
+                  <p class="text-xs text-gray-400">Sorry, this one has to be white otherwise you can't see the options</p>
+                  <button type="button" id="sunglassesButton" class="text-xs bg-gradient-to-br from-cyan-500 to-yellow-400 text-white px-1.5 font-semibold p-0.5 rounded-full inline-block">wear sunglasses 🕶️🌞</button>
+                  <div id="sunglasses" class="hidden fixed inset-0 bg-black/40 pointer-events-none">
+                    <iframe class="absolute bottom-0 left-0" src="https://giphy.com/embed/CAxbo8KC2A0y4" width="480" height="302" style="" frameBorder="0" allowFullScreen></iframe>
+                    <p><a href="https://giphy.com/gifs/excited-CAxbo8KC2A0y4"></a></p>
+                  </div>
+                  <script>
+                    const sunglassesButton = document.querySelector('#sunglassesButton')
+                    const sunglasses = document.querySelector('#sunglasses')
+                    var sunglassesOn = false
+
+                    sunglassesButton.onclick = (e) => {
+                      if (sunglassesOn === false) {
+                        sunglasses.classList.toggle('hidden')
+                        sunglassesButton.textContent = sunglassesButton.textContent.replace('wear', 'take off')
+                        sunglassesOn = true
+                      } else {
+                        sunglasses.classList.toggle('hidden')
+                        sunglassesButton.textContent = sunglassesButton.textContent.replace('take off', 'wear')
+                        sunglassesOn = false
+                      }
+                    }
+
+
+                  </script>
+                </div>
+                <select class="p-1 bg-white text-black mt-1.5 place rounded bg-transparent shadow-[0_0_15px] shadow-yellow-300" name="situation" required>
+                  <option value="" default>Complete shit 💩 (unset)</option>
+                  <option value="US client that is an individual" default>US client that is an individual</option>
+                  <option value="US client that is a business" default>US client that is a business</option>
+                  <option value="US client located in Portugal that is a business" default>US client located in Portugal that is a business</option>
+                  <option value="US client located in Portugal that is an individual" default>US client located in Portugal that is an individual</option>
+                </select>
+              </div>
+              <div>
+                <label class="block" for="amount">How much did you get paid? (USD)</label>
+                <input class="p-1 mt-1.5 place rounded bg-transparent shadow-[inset_0_0_0_0.5px] text-green-400 shadow-green-600 outline-none" type="number" step="0.01" value="0.00" placeholder="0.00" name="amount">
+              </div>
+              <div>
+                <label class="block" for="date">When did you get paid?</label>
+                <input class="p-1 mt-1.5 place rounded bg-transparent shadow-[inset_0_0_0_0.5px] text-orange-400 shadow-orange-600 outline-none" type="date" name="date">
+              </div>
+              <div>
+                <label class="block" for="description">Description in <span title="Portuguese">Pastel de Nata language</span><img class="inline h-4" src="../static/images/pastel-de-nata.png"></label>
+                <textarea class="p-1 w-full mt-1.5 place rounded bg-transparent shadow-[inset_0_0_0_0.5px] text-yellow-300 shadow-yellow-500 outline-none" name="description" placeholder="ensinando as pessoas a limparem a própria bunda (bom trabalho!)"></textarea>
+                <button type="button" id="translateButton" class="px-4 py-2 bg-blue-600 rounded-full group">Translate English to Pastel de Nata <img class="inline-block h-6 group-hover:animate-spin" src="../static/images/pastel-de-nata.png"></button>
+                <script>
+                  const translateButton = document.querySelector('#translateButton')
+                  translateButton.onclick = (e) => {
+                    const description = document.querySelector('[name="description"]')
+                    // Open a NEW Google Translate tab with the text parameter filled with the description
+                    window.open(`https://translate.google.com/?sl=en&tl=pt&text=${description.value}`)
+                  }
+                </script>
+              </div>
+              <div>
+                <input id="checkbox" type="checkbox" name="checkbox">
+                <label for="checkbox">I've double checked <span class="blur-md">my shit </span>and am confident my details are right <span class="blur-md">even though I'm retarded.</span></label>
+              </div>
+              <button type="submit" class="px-5 py-2 rounded-full disabled:text-gray-500 bg-gradient-to-br from-green-500 to-red-500 disabled:from-green-950 disabled:to-red-950" disabled>This button is disabled <span class="blur-md">like you are mentally</span></button>
+              <script>
+                const checkbox = document.querySelector('#checkbox')
+                const submitButton = document.querySelector('button[type="submit"]')
+                checkbox.onclick = (e) => {
+                  submitButton.disabled = !e.target.checked
+                  submitButton.innerText = e.target.checked ? 'foda-se! Send Green Reciept' : 'This button is disabled like you are mentally'
+                }
+              </script>
+            </div>
+          </form>
+
+        </div><!-- Content End-->
+
+      </div>
+    </div>
+    <script>
+      const blurredContent = document.querySelectorAll('.blur-md')
+      const blurButton = document.querySelector('#blurButton')
+
+      window.onload = (e) => {
+        blurredContent.forEach((element) => {
+          element.classList.toggle('blur-md')
+        })
+      }
+
+      blurButton.onclick = (e) => {
+        blurredContent.forEach((element) => {
+          element.classList.toggle('blur-md')
+        })
+        blurButton.textContent = blurButton.textContent.includes('on') ? 'Filter mode: on' : 'Filter mode: off'
+      }
+
+    </script>
+  </body>
+
+</html>

@@ -6,12 +6,20 @@ from decimal import Decimal
 from pathlib import Path
 
 import requests
+import questionary
 from currency_converter import CurrencyConverter, ECB_URL
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from selenium import webdriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait, Select
+
+
+DESCRIPTIONS = {
+    'teaching': 'Serviços de ensino a distancia',
+    'website build': 'Construção de website',
+    'automation': 'Serviços de automação de pagina web',
+}
 
 
 # Collect details of the invoice
@@ -33,7 +41,13 @@ class Invoice(BaseModel):
         client_name = client_name or input('Enter the full name of the client: ')
         amount = amount or input('Enter the invoice amount in USD: $')
         date = date or input('Enter the date (format: YYYY-MM-DD): ')
-        description = input(f'Enter the description (default: {repr(description)}): ') or description
+        description = input(f'Enter the description (leave blank to choose): ')
+        if not description:
+            option = questionary.select(
+                'What service did you provide?',
+                choices=DESCRIPTIONS.keys()
+            ).ask()
+            description = DESCRIPTIONS[option]
         return cls(amount=amount, date=date, client_name=client_name, description=description)
 
     def to_currency(self, to_currency: str) -> Invoice:
@@ -63,7 +77,7 @@ def convert_currency(amount: int | float | Decimal, from_currency: str, to_curre
 
 # Submit the invoice to the client
 class TaxPortalWebsite:
-    PAGES = {
+    URLS = {
         'login': 'https://www.acesso.gov.pt/v2/loginForm?partID=SIRE&path=/recibos/portal/',
         'login success': 'https://irs.portaldasfinancas.gov.pt/recibos/;sireinter_JSessionID=',
         'invoice start': 'https://irs.portaldasfinancas.gov.pt/recibos/portal/emitir/emitirDocumentos',
@@ -80,7 +94,7 @@ class TaxPortalWebsite:
             self.login()
 
     def login(self):
-        self.browser.get(self.PAGES['login'])
+        self.browser.get(self.URLS['login'])
         load_dotenv()
         nif = os.getenv('NIF')
         tax_portal_password = os.getenv('TAX_PORTAL_PASSWORD')
@@ -89,12 +103,12 @@ class TaxPortalWebsite:
         self.browser.find_element('id', 'username').send_keys(nif)
         self.browser.find_element('id', 'password-nif').send_keys(tax_portal_password)
         self.browser.find_element('id', 'sbmtLogin').click()
-        WebDriverWait(self.browser, 10).until(EC.url_contains(self.PAGES['login success']))
+        WebDriverWait(self.browser, 10).until(EC.url_contains(self.URLS['login success']))
 
     def submit_invoice(self, invoice: Invoice, confirm: bool = True):
         if not invoice.currency == 'EUR':
             invoice = invoice.to_currency('EUR')
-        invoice_form_url = f'{self.PAGES["invoice form"]}?dataCopia={invoice.date:%Y-%m-%d}&tipoRecibo=FR'
+        invoice_form_url = f'{self.URLS["invoice form"]}?dataCopia={invoice.date:%Y-%m-%d}&tipoRecibo=FR'
         self.browser.get(invoice_form_url)
         Select(self.browser.find_element('css selector', 'select[name="pais"]')).select_by_visible_text('ESTADOS UNIDOS')
         self.browser.find_element('css selector', 'input[name="nomeAdquirente"]').send_keys(invoice.client_name)
@@ -112,6 +126,6 @@ class TaxPortalWebsite:
         WebDriverWait(self.browser, 10).until(EC.visibility_of_any_elements_located(('css selector', 'button.btn-success')))
         final_submit_button = [button for button in self.browser.find_elements('css selector', 'button.btn-success') if button.text == 'EMITIR'][0]
         final_submit_button.click()
-        WebDriverWait(self.browser, 10).until(EC.url_contains(self.PAGES['invoice complete']))
+        WebDriverWait(self.browser, 10).until(EC.url_contains(self.URLS['invoice complete']))
         if confirm:
             input('Invoice submitted successfully. Press Enter to exit...')
