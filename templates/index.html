@@ -31,9 +31,9 @@
             <button id="blurButton" type="button" class="px-5 py-2 rounded-full bg-white/20 hover:bg-white/30">Filter mode: off</button>
             <div class="text-xl">
               <p class="mt-5">Welcome to the <span class="blur-md">Dumb Ass </span>Portuguese Tax Portal!</p>
-              <p class="mt-5">This site is to help you<span class="blur-md">r dumb ass</span> submit your <span class="blur-md">fucking retarded</span> Portuguese Green Receipts in fucking English</p>
+              <p class="mt-5">This site is to help YOU<span class="blur-md">R 🫵 dumb ass</span> submit your <span class="blur-md">fucking retarded</span> Portuguese Green Receipts in fucking English</p>
               <p class="mt-5">(because the<span class="blur-md">se lazy</span> government <span class="blur-md">fuckers</span> couldn't include a <span class="blur-md">fucking</span> English version)</p>
-              <p class="mt-5">to keep you<span class="blur-md">r fucking shit</span>organized.</p>
+              <p class="mt-5">to keep you<span class="blur-md">r fucking shit</span> organized.</p>
               <p class="mt-5">Fill out the <span class="blur-md">fucking</span> Invoice form to get <span class="blur-md">fucking </span>started!</p>
             </div>
             <script>
@@ -50,7 +50,9 @@
                 <label class="block" for="client_name">What is your client's name?</label>
                 <input class="p-1 mt-1.5 place text-blue-400 rounded bg-transparent shadow-[inset_0_0_0_0.5px] shadow-blue-600 outline-none" type="text" name="client_name" placeholder="Fucker Jones">
               </div>
-              <div>
+
+              <!-- Situation Field -->
+              <!-- <div>
                 <label class="block" for="client_name">What is their situation?</label>
                 <div class="flex items-center gap-2">
                   <p class="text-xs text-gray-400">Sorry, this one has to be white otherwise you can't see the options</p>
@@ -75,8 +77,6 @@
                         sunglassesOn = false
                       }
                     }
-
-
                   </script>
                 </div>
                 <select class="p-1 bg-white text-black mt-1.5 place rounded bg-transparent shadow-[0_0_15px] shadow-yellow-300" name="situation" required>
@@ -86,7 +86,7 @@
                   <option value="US client located in Portugal that is a business" default>US client located in Portugal that is a business</option>
                   <option value="US client located in Portugal that is an individual" default>US client located in Portugal that is an individual</option>
                 </select>
-              </div>
+              </div> -->
               <div>
                 <label class="block" for="amount">How much did you get paid? (USD)</label>
                 <input class="p-1 mt-1.5 place rounded bg-transparent shadow-[inset_0_0_0_0.5px] text-green-400 shadow-green-600 outline-none" type="number" step="0.01" value="0.00" placeholder="0.00" name="amount">
@@ -96,9 +96,32 @@
                 <input class="p-1 mt-1.5 place rounded bg-transparent shadow-[inset_0_0_0_0.5px] text-orange-400 shadow-orange-600 outline-none" type="date" name="date">
               </div>
               <div>
+                <label class="block" for="description">What service did you provide?</label>
+                <select
+                  class="p-1 w-full mt-1.5 place rounded bg-transparent shadow-[inset_0_0_0_0.5px] text-yellow-300 shadow-yellow-500 outline-none"
+                  name="description"
+                  required>
+                  <option value="Serviços de ensino a distancia" selected>Software Consulting</option>
+                </select>
+
+                <!-- Old Description -->
+                <!-- 
                 <label class="block" for="description">Description in <span title="Portuguese">Pastel de Nata language</span><img class="inline h-4" src="../static/images/pastel-de-nata.png"></label>
-                <textarea class="p-1 w-full mt-1.5 place rounded bg-transparent shadow-[inset_0_0_0_0.5px] text-yellow-300 shadow-yellow-500 outline-none" name="description" placeholder="ensinando as pessoas a limparem a própria bunda (bom trabalho!)"></textarea>
-                <button type="button" id="translateButton" class="px-4 py-2 bg-blue-600 rounded-full group">Translate English to Pastel de Nata <img class="inline-block h-6 group-hover:animate-spin" src="../static/images/pastel-de-nata.png"></button>
+                <input 
+                  type="text" 
+                  class="p-1 w-full mt-1.5 place rounded bg-transparent shadow-[inset_0_0_0_0.5px] text-yellow-300 shadow-yellow-500 outline-none" 
+                  name="description" 
+                  placeholder="ensinando as pessoas a limparem a própria bunda (bom trabalho!)"
+                  list="description-options"
+                  required
+                  value="Serviços de ensino a distancia"
+                >
+
+                <datalist id="description-options">
+                  <option value="Serviços de ensino a distancia"></option>
+                </datalist> 
+                
+                <button type="button" id="translateButton" class="px-4 py-2 bg-blue-600 rounded-full group mt-4">Translate English to Pastel de Nata <img class="inline-block h-6 group-hover:animate-spin" src="../static/images/pastel-de-nata.png"></button>
                 <script>
                   const translateButton = document.querySelector('#translateButton')
                   translateButton.onclick = (e) => {
@@ -107,6 +130,7 @@
                     window.open(`https://translate.google.com/?sl=en&tl=pt&text=${description.value}`)
                   }
                 </script>
+                -->
               </div>
               <div>
                 <input id="checkbox" type="checkbox" name="checkbox">
@@ -135,6 +159,7 @@
       window.onload = (e) => {
         blurredContent.forEach((element) => {
           element.classList.toggle('blur-md')
+          blurButton.textContent = 'Filter mode: off'
         })
       }
 
@@ -142,7 +167,7 @@
         blurredContent.forEach((element) => {
           element.classList.toggle('blur-md')
         })
-        blurButton.textContent = blurButton.textContent.includes('on') ? 'Filter mode: on' : 'Filter mode: off'
+        blurButton.textContent = blurButton.textContent.includes('on') ? 'Filter mode: off' : 'Filter mode: on'
       }
 
     </script>
